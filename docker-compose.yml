@@ -1,0 +1,10 @@
+version: "2"
+
+services:
+    external_service:
+        container_name: external_service
+        build: external_service/
+        ports:
+            - "5000:5000"
+        environment:
+            PERCENT_POINT: 50
