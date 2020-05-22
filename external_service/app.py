@@ -25,7 +25,6 @@ def place_order():
     return ({'message': f'Order {order["number"]} placed'}, 201)
 
 
-
 if __name__ == "__main__":
     print('Starting app')
     app.run()

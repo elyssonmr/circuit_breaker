@@ -1,10 +1,23 @@
 version: "2"
 
 services:
-    external_service:
-        container_name: external_service
-        build: external_service/
-        ports:
-            - "5000:5000"
-        environment:
-            PERCENT_POINT: 50
+  external_service:
+    container_name: external_service
+    build: external_service/
+    ports:
+      - "5000:5000"
+    environment:
+      PERCENT_POINT: 50
+  redis-cache:
+    image: redis:6-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+  my_app:
+    container_name: my_app
+    build: my_app/
+    ports:
+      - "8000:8000"
+    environment:
+      REDIS_URI: "redis://cache-cache:6379"
+      PLACE_ORDER_SERVICE_URL: "http://external_service:5000"

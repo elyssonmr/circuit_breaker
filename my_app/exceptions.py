@@ -1,0 +1,2 @@
+class CircuitBreakerOpen(Exception):
+    pass
