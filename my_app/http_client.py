@@ -8,7 +8,7 @@ from circuit_breaker import circuit_breaker_function
 service_url = os.environ['PLACE_ORDER_SERVICE_URL']
 
 
-@circuit_breaker_function('place_order', 5, 300, (Timeout,))
+@circuit_breaker_function('place_order', 5, 15, (Timeout,))
 def place_order(username, order_id):
     request_data = {
         "username": username,

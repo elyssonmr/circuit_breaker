@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      PERCENT_POINT: 50
+      PERCENT_POINT: 30
   redis-cache:
     image: redis:6-alpine
     container_name: redis-cache
@@ -19,5 +19,5 @@ services:
     ports:
       - "8000:8000"
     environment:
-      REDIS_URI: "redis://cache-cache:6379"
+      REDIS_URI: "redis://redis-cache:6379"
       PLACE_ORDER_SERVICE_URL: "http://external_service:5000"
