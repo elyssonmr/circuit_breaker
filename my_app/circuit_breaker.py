@@ -32,7 +32,7 @@ class CircuitBreaker:
             cache.set(self.err_count_key, 0)
 
 
-def circuit_breaker_function(name, threshold, open_time, errors):
+def circuit_breaker_function(name, threshold, open_time, errors_set):
     cb = CircuitBreaker(name, threshold, open_time)
 
     def decorator(func):
@@ -43,7 +43,7 @@ def circuit_breaker_function(name, threshold, open_time, errors):
             try:
                 func(*args, **kwargs)
             except Exception as ex:
-                if isinstance(ex, errors):
+                if isinstance(ex, errors_set):
                     cb.increment_errors()
                     cb.check_cb()
                 raise ex
