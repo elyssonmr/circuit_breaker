@@ -18,7 +18,7 @@ def buy_course():
     except CircuitBreakerOpen:
         return (
             {"message": "Can't place order right now..."
-                        " Try again in 5 minutes."},
+                        " Try again in a moment."},
             502
         )
     except Exception:

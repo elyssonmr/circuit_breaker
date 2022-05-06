@@ -7,7 +7,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      PERCENT_POINT: 30
+      PERCENT_POINT: 10
   redis-cache:
     image: redis:6-alpine
     container_name: redis-cache

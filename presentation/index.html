@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Circuit Breaker</title>
+
+        <meta name="author" content="Élysson MR">
+
+        <link rel="stylesheet" href="dist/reset.css">
+        <link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/theme/black.css">
+
+        <!-- Theme used for syntax highlighted code -->
+        <link rel="stylesheet" href="plugin/highlight/monokai.css">
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section>
+                    <h1>
+                        Estratégias de Resiliência - Circuit Breaker
+                    </h1>
+                    <p>Élysson MR - Squad Pagamentos Ecomm</p>
+                </section>
+                <section>
+                    <h1>Tópicos</h1>
+                    <ul>
+                        <li class="fragment">Introdução</li>
+                        <li class="fragment">O que é uma aplicação resiliente?</li>
+                        <li class="fragment">O design Pattern Circuit Breaker</li>
+                        <li class="fragment">Exemplo prático</li>
+                        <li class="fragment">Conclusão</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Introdução</h2>
+                    <ul>
+                        <li class="fragment">Micro-serviços se conectam uns aos outros utilizando a rede</li>
+                        <li class="fragment">O que faremos caso um dos nós falhe? Vamos deixar todas as aplicações falhem juntas?</li>
+                        <li class="fragment">Como podemos tolerar erros na comunicação com outros serviços?</li>
+                        <li class="fragment">Existem diversas estratégias para manter as aplicações funcionando</li>
+                    </ul>
+                </section>
+                <section>
+                    <section>
+                        <h2>O que é uma aplicação resiliente?</h2>
+                        <ul>
+                            <li class="fragment">É uma aplicação que saiba lidar com as falhas se recuperando delas para continuar o funcionamento</li>
+                            <li class="fragment">
+                                <span>Uma aplicação pode se recuperar de 2 formas:</span>
+                                <ul>
+                                    <li class="fragment">
+                                        <b>Totalmente</b> -> ela mantém todos os serviços em funcionamento sem o usuário perceber que houve uma falha
+                                    </li>
+                                    <li class="fragment">
+                                        <b>Com Degradação</b> -> alguns serviços são oferecidos de forma limitada (graceful degradation)
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>O que é uma aplicação resiliente?</h2>
+                        <ul>
+                            <li class="fragment">
+                                <span>Existem 3 tipos de falhas:</span>
+                                <ul>
+                                    <li class="fragment">
+                                        <b>Transientes</b> -> Ocorrem uma vez e demora para ocorrer de novo. Ex: Falta de internet
+                                    </li>
+                                    <li class="fragment">
+                                        <b>Intermitentes</b> -> Falhas transientes e ocorrem repetidamente. Ex: Timeouts de requests devido a rede lenta
+                                    </li>
+                                    <li class="fragment">
+                                        <b>Permanentes</b> -> Quando ocorrem permanecem até que alguma ação seja tomada. Ex: O servidor de aplicação cair
+                                    </li>
+                                <ul>
+                            </li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>O design pattern Circuit Breaker</h2>
+                        <ul>
+                            <li class="fragment">
+                                Bem parecido com o conceito de instalações elétricas
+                            </li>
+                            <li class="fragment">
+                                Quando determinada situação ocorre o Circuit Breaker abre protegendo o restante dos micro-serviços (circuito)
+                            </li>
+                            <li class="fragment">
+                                Essa estratégia é utilizada para poder não degradar o nosso sistema
+                            </li>
+                            <li class="fragment">
+                                Com a abertura do CB podemos tomar uma ação diferente ou retornar um erro direto
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>O design pattern Circuit Breaker</h2>
+                        <ul>
+                            <li class="fragment">
+                                Nós devemos envolver a chamada de um recurso caro com a implementação do Circuit Breaker
+                            </li>
+                            <li class="fragment">
+                                Esse objeto irá monitorar os erros (pode ser mais de um tipo) para abrir o CB
+                            </li>
+                            <li class="fragment">
+                                Pode-se configurar um tempo para podermos “armar” novamente o Circuit Breaker automaticamente
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>O design pattern Circuit Breaker</h2>
+                        <p>Exemplo1: Usamos um serviço de envio de emails para nossos clientes, porém ele esta retornando muitos timeouts.</p>
+                        <img src="img/exemplo1.png" width="700" height="300"/>
+                    </section>
+                    <section>
+                        <h2>O design pattern Circuit Breaker</h2>
+                        <p>Exemplo2: Precisamos processar os pagamentos das assinaturas, mas o serviço principal (mais barato) está com problemas . Para não ficar muito tempo sem vender ($$$), vamos utilizar outro serviço (mais caro) como backup por um tempo ($$).</p>
+                    </section>
+                    <section>
+                        <h2>O design pattern Circuit Breaker</h2>
+                        <span>Fluxo Normal</span>
+                        <img src="img/exemplo21.png" width="900" height="400"/>
+                    </section>
+                    <section>
+                        <h2>O design pattern Circuit Breaker</h2>
+                        <span>Fluxo Backup Ativo</span>
+                        <img src="img/exemplo22.png" width="900" height="400"/>
+                    </section>
+                </section>
+                <section>
+                    <h2>Exemplo Prático</h2>
+                    <ul>
+                        <li class="fragment">
+                            Dois apps em flask simples, para demostrar como a técnica funciona.
+                        </li>
+                        <li class="fragment">
+                            Vamos executar um teste de carga com o Locust para podemos simular o CB abrindo.
+                        </li>
+                        <li class="fragment">
+                            Que nossa senhora do live code nos abençoe! 🙏
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Conclusão</h2>
+                    <ul>
+                        <li class="fragment">
+                            Utilizando o Circuit Breaker podemos não onerar muito o nosso(s) sistema(s)
+                        </li>
+                        <li class="fragment">
+                            Utilizar somente o CB para evitar erros pode não ser algo interessante para o negócio
+                        </li>
+                        <li class="fragment">
+                            O padrão é simples e bem eficiente permitindo a utilização em diversas partes do sistema
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Para saber mais:</h2>
+                    <ul>
+                        <li><a href="https://martinfowler.com/bliki/CircuitBreaker.html">https://martinfowler.com/bliki/CircuitBreaker.html</a></li>
+                        <li><a href="https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern">https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern</a></li>
+                        <li><a href="https://imasters.com.br/desenvolvimento/criando-aplicacoes-resilientes-uma-visao-geral">https://imasters.com.br/desenvolvimento/criando-aplicacoes-resilientes-uma-visao-geral</a></li>
+                        <li><a href="https://www.infoq.com/br/presentations/construindo-aplicacoes-resilientes/">https://www.infoq.com/br/presentations/construindo-aplicacoes-resilientes/</a></li>
+                        <li><a href="https://pypi.org/project/pybreaker/">https://pypi.org/project/pybreaker/</a></li>
+                        <li><a href="https://pypi.org/project/lasier/">https://pypi.org/project/lasier/</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <h1>Obrigado!!</h1>
+                    <p><b>Slack</b>: @elysson.rezende</p>
+                </section>
+            </div>
+        </div>
+
+        <script src="dist/reveal.js"></script>
+        <script src="plugin/notes/notes.js"></script>
+        <script src="plugin/markdown/markdown.js"></script>
+        <script src="plugin/highlight/highlight.js"></script>
+        <script>
+            // More info about initialization & config:
+            // - https://revealjs.com/initialization/
+            // - https://revealjs.com/config/
+            Reveal.initialize({
+                hash: true,
+
+                // Learn about plugins: https://revealjs.com/plugins/
+                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+            });
+        </script>
+    </body>
+</html>
