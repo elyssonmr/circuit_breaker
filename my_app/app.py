@@ -31,5 +31,5 @@ def buy_course():
 
 
 if __name__ == "__main__":
-    print("Stating app")
+    print("Starting app")
     app.run()

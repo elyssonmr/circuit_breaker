@@ -19,7 +19,7 @@ def place_order():
     order = request.get_json()
     if should_timeout():
         print("The server is really slow today!")
-        sleep(25)
+        sleep(7)
 
     print(f'Order: {order["number"]} placed')
     return ({'message': f'Order {order["number"]} placed'}, 201)
